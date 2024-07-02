@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="CounterModel.fs" />
+        <Compile Include="CounterView.fs" />
         <Compile Include="App.fs" />
     </ItemGroup>
 

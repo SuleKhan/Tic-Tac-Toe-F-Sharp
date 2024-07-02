@@ -1,4 +1,4 @@
-module App
+module MinimalApp.App
 
 (**
  The famous Increment/Decrement ported from Elm.
@@ -10,42 +10,63 @@ open Elmish.React
 open Elmish.Debug
 open Feliz
 
-// MODEL
 
-type Model = int
+[<RequireQualifiedAccess>]
+type PageId =
+    | Counter
+    | About
+
+// MODEL
+type Model = {
+    Counter: CounterModel
+    About: string
+    PageId: PageId
+}
+
+
 
 type Msg =
-    | Increment
-    | Decrement
+    | SwitchPage
+    | CounterSubMsg of CounterMsg
 
-let init () : Model = 0
+let init () : Model = {Counter = CounterModel.init; About = "About"; PageId = PageId.Counter }
 
 // UPDATE
 
+let switchPage (pageId : PageId) =
+    match pageId with
+    | PageId.Counter -> PageId.About
+    | PageId.About -> PageId.Counter
+
+
+
 let update (msg: Msg) (model: Model) =
     match msg with
-    | Increment -> model + 1
-    | Decrement -> model - 1
+    | CounterSubMsg subMsg -> {model with Counter = CounterModel.update subMsg model.Counter}
+    | SwitchPage -> {model with PageId = switchPage model.PageId }
 
 // VIEW (rendered with React)
-[<ReactComponent>]
-let View (model: Model) dispatch =
-    React.useEffect(fun () -> Browser.Dom.document.title <- sprintf "Count = %d" model)
+
     
+let aboutView (about: string) =
     Html.div [
-        Html.button [
-            prop.onClick(fun _ -> dispatch Increment)
-            prop.text "+"
-        ]
-        Html.div [ prop.text (string model) ]
-        Html.button [
-            prop.onClick(fun _ -> dispatch Decrement)
-            prop.text "-"
-        ]
+        Html.div [ prop.text about ]
     ]
 
+let view (model: Model) (dispatch: Msg -> unit) : Fable.React.ReactElement =
+    Html.div [
+        match model.PageId with
+        | PageId.Counter -> CounterView.view model.Counter (CounterSubMsg >> dispatch)
+        | PageId.About -> aboutView model.About
+        Html.button [
+            prop.onClick(fun _ -> dispatch SwitchPage)
+            prop.text "Switch Page"
+        ]
+    ]
+    
+
 // App
-Program.mkSimple init update View
+Program.mkSimple init update view
 |> Program.withReactSynchronous "elmish-app"
 |> Program.withConsoleTrace
 |> Program.withDebugger
