@@ -20,7 +20,6 @@ type GameState =
     | Draw
     | InProgress
 
-// Top Left = (0, 0), Bottom Right = (Width - 1, Height - 1)
 type Coord = { Row: int; Col: int }
 
 [<RequireQualifiedAccess>]
@@ -65,7 +64,6 @@ module Board =
 
 type TicTacToeModel = {
     Board: Board
-    // NewDimensions: Result<Dimensions, DimensionsError>
     NewWidth: ValidIntegerOrString
     NewHeight: ValidIntegerOrString
     Turn: Player
@@ -75,20 +73,17 @@ type TicTacToeModel = {
 type TicTacToeMsg =
     | SelectSpace of Player * Coord
     | ResetGame
-    // | UpdateDimensions of Dimensions
     | SetNewWidth of string
     | SetNewHeight of string
 
 module TicTacToeModel =
-
-    let newDimensions = Dimensions.init 3 3
-    let newDimensions2 = ValidIntegerOrString.ValidInteger 3
+    let defaultDimension = 3
+    let newDimensions = Dimensions.init defaultDimension defaultDimension
 
     let init = {
         Board = Board.init newDimensions
-        // NewDimensions = Ok newDimensions
-        NewWidth = newDimensions2
-        NewHeight = newDimensions2
+        NewWidth = ValidIntegerOrString.ValidInteger defaultDimension
+        NewHeight = ValidIntegerOrString.ValidInteger defaultDimension
         Turn = Player.X
         GameState = InProgress
     }
@@ -98,27 +93,6 @@ module TicTacToeModel =
     let private changeTurn (model: TicTacToeModel) =
         let nextPlayer = Player.otherPlayer model.Turn
         { model with Turn = nextPlayer }
-
-    // let private checkRowAndColWinner (idx: int) (player: Player) (spaces: Map<Coord, Player>) =
-    //     // Check Row
-    //     if (spaces.TryFind (Coord.init idx 0), spaces.TryFind (Coord.init idx 1), spaces.TryFind (Coord.init idx 2))
-    //            = (Some player, Some player, Some player)
-    //     then Some player
-    //     // Check Col
-    //     elif (spaces.TryFind (Coord.init 0 idx), spaces.TryFind (Coord.init 1 idx), spaces.TryFind (Coord.init 2 idx))
-    //            = (Some player, Some player, Some player)
-    //     then Some player
-    //     else None
-
-    // let private checkDiagWinner (player: Player) (spaces: Map<Coord, Player>) =
-    //     // Check Diagonals
-    //     if (spaces.TryFind (Coord.init 0 0), spaces.TryFind (Coord.init 1 1), spaces.TryFind (Coord.init 2 2))
-    //                = (Some player, Some player, Some player)
-    //     then Some player
-    //     elif (spaces.TryFind (Coord.init 0 2), spaces.TryFind (Coord.init 1 1), spaces.TryFind (Coord.init 2 0))
-    //                = (Some player, Some player, Some player)
-    //     then Some player
-    //     else None
 
     let checkSpacesWinner (coords: Coord List) (board: Board) =
         let spaces = List.map board.Spaces.TryFind coords
@@ -152,8 +126,6 @@ module TicTacToeModel =
         | None, None -> None
 
     let private checkWinner (board: Board) =
-        // let rows = List.init board.Dimensions.Height id
-        // let cols = List.init board.Dimensions.Width id
 
         let rowWinner =
             List.init board.Dimensions.Height (flip checkRowWinner board)
@@ -171,17 +143,8 @@ module TicTacToeModel =
         | _, _, Some winner -> Some winner
         | None, None, None -> None
 
-    // let checkIsBoardFilled (board: Board) =
-    //     let createRowCoords (row: int) = List.init board.Dimensions.Width (Coord.init row)
-    //
-    //     let rows = List.init board.Dimensions.Height id
-    //     let gridCoords = List.map createRowCoords rows |> List.concat
-    //     let gridSpaces = List.map board.Spaces.TryFind gridCoords
-    //     List.forall ((<>) None) gridSpaces
 
     let updateGameState (model: TicTacToeModel) =
-        // let isBoardFilled = model.Board.Spaces.Count = model.Board.Dimensions.Width * model.Board.Dimensions.Height
-        // let isBoardFilled = checkIsBoardFilled model.Board
 
         match checkWinner model.Board, Board.isFilled model.Board with
         | Some winner, _ -> {
@@ -192,8 +155,6 @@ module TicTacToeModel =
         | None, false -> model
 
     let private setPlayerSpace (player: Player) (coord: Coord) (model: TicTacToeModel) =
-        // {model with Board.Spaces = model.Board.Spaces.Add (coord, player) }
-        // {model with TicTacToeModel.Board.Spaces = model.Board.Spaces.Add (coord, player) }
         let newSpaces = model.Board.Spaces.Add (coord, player)
         let newBoard = { model.Board with Spaces = newSpaces }
         { model with Board = newBoard }
@@ -223,14 +184,6 @@ module TicTacToeModel =
             GameState = InProgress
         }
 
-    // let updateDimensions (dimensions: Dimensions) (model: TicTacToeModel) =
-    //     let isValid = 3 <= dimensions.Width && 3 <= dimensions.Height && dimensions.Width < 10 && dimensions.Height < 10
-    //
-    //     if isValid then {model with NewDimensions = Ok dimensions }
-    //     else
-    //         let errorDimensions = {ErrorDimensions = dimensions; ErrorMessage = "Please choose width and height between 3 and 9." }
-    //         {model with NewDimensions = Error errorDimensions }
-    //
     let update (msg: TicTacToeMsg) (model: TicTacToeModel) =
         match msg with
         | SelectSpace (player, coord) ->
@@ -239,7 +192,6 @@ module TicTacToeModel =
             else
                 model
         | ResetGame -> resetGame model
-        // | UpdateDimensions dimensions -> updateDimensions dimensions model
         | SetNewWidth newWidthStr ->
             let newWidth = Validations.validDimension newWidthStr
             { model with NewWidth = newWidth }

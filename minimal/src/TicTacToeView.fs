@@ -70,9 +70,6 @@ let renderBoard (model: TicTacToeModel) dispatch =
             ]
         ]
     ]
-// type DimensionToUpdate =
-//     | Width
-//     | Height
 
 [<RequireQualifiedAccess>]
 type TextInputValidity =
@@ -81,27 +78,11 @@ type TextInputValidity =
 
 type TextInputProps = {
     InputLabel: string
-    // MinSize: int
     Value: string
     OnChange: string -> unit
     Validity: TextInputValidity
-// DimensionToUpdate: DimensionToUpdate
 }
 
-// let dimensionInputValue (dimension: DimensionToUpdate) (newDimension: Dimensions) =
-//     match dimension with
-//     | Width -> newDimension.Width
-//     | Height -> newDimension.Height
-
-// let getNewDimensions (newDimensions: Result<Dimensions, DimensionsError>) =
-//     match newDimensions with
-//     | Ok dimensions -> dimensions
-//     | Error errorDimensions -> errorDimensions.ErrorDimensions
-//
-// let dimensionInputOnChange (newSize: int) (dimensionToUpdate: DimensionToUpdate) (newDimensions: Result<Dimensions, DimensionsError>) dispatch =
-//     match dimensionToUpdate with
-//     | Width -> dispatch (SetNewWidth {getNewDimensions newDimensions with Width = newSize})
-//     | Height -> dispatch (UpdateDimensions {getNewDimensions newDimensions with Height = newSize})
 
 let renderDimensionInput (dimensionInput: TextInputProps) (model: TicTacToeModel) dispatch =
     Html.div [
@@ -110,9 +91,6 @@ let renderDimensionInput (dimensionInput: TextInputProps) (model: TicTacToeModel
             Html.div [ prop.text dimensionInput.InputLabel ]
             Html.input [
                 prop.type' "number"
-                // prop.min dimensionInput.MinSize
-                // prop.value (dimensionInputValue dimensionInput.DimensionToUpdate model.NewDimensions)
-                // prop.onChange(fun (newSize: int) -> dimensionInputOnChange newSize dimensionInput.DimensionToUpdate model.NewDimensions dispatch)
                 prop.value dimensionInput.Value
                 prop.onChange dimensionInput.OnChange
             ]
@@ -125,14 +103,6 @@ let renderDimensionInput (dimensionInput: TextInputProps) (model: TicTacToeModel
                 ]
         ]
     ]
-
-// let errorMessage (model: TicTacToeModel) =
-//     let errorText =
-//         match model.NewDimensions with
-//         | Ok _ -> ""
-//         | Error errorDimensions -> errorDimensions.ErrorMessage
-//
-//     Html.div [ prop.style [ style.color "red" ]; prop.text errorText ]
 
 let resetButton dispatch =
     Html.button [
