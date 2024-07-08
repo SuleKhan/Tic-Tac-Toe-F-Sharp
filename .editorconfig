@@ -1,0 +1,26 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{fs,fsx}]
+fsharp_space_before_uppercase_invocation=true
+fsharp_space_before_class_constructor=true
+fsharp_space_before_member=true
+fsharp_align_function_signature_to_indentation=true
+fsharp_alternative_long_member_definitions=true
+fsharp_multi_line_lambda_closing_newline=true
+fsharp_blank_lines_around_nested_multiline_expressions=false
+fsharp_newline_before_multiline_computation_expression=false
+fsharp_multiline_bracket_style=stroustrup
+
+fsharp_max_value_binding_width=80
+fsharp_max_if_then_else_short_width=60
+fsharp_max_infix_operator_expression=60
+fsharp_max_array_or_list_width=40
+fsharp_max_dot_get_expression_width=60
+ 
