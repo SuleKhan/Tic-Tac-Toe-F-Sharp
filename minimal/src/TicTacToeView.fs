@@ -104,11 +104,17 @@ let renderDimensionInput (dimensionInput: TextInputProps) (model: TicTacToeModel
         ]
     ]
 
-let resetButton dispatch =
+let resetButton (widthValidity: TextInputValidity) (heightValidity: TextInputValidity) dispatch =
+    let areNotValidInputs =
+        match widthValidity, heightValidity with
+            | TextInputValidity.Valid, TextInputValidity.Valid -> false
+            | _, _ -> true
+
     Html.button [
         prop.style [ style.margin 10 ]
-        prop.onClick (fun _ -> dispatch ResetGame)
+        prop.onClick (fun _ -> if areNotValidInputs then () else dispatch ResetGame)
         prop.text "Reset Board"
+        prop.disabled areNotValidInputs
     ]
 
 let view (model: TicTacToeModel) (dispatch: TicTacToeMsg -> unit) : Fable.React.ReactElement =
@@ -143,7 +149,7 @@ let view (model: TicTacToeModel) (dispatch: TicTacToeMsg -> unit) : Fable.React.
                 renderDimensionInput heightDimensionInput model dispatch
             ]
         ]
-        resetButton dispatch
+        resetButton widthDimensionInput.Validity heightDimensionInput.Validity dispatch
     ]
 
 // px (specifying font-size on root of doc), percent (only font-size), em (always, unless font-size), rem, vh, vw
