@@ -7,15 +7,22 @@ type ValidIntegerOrString =
     | InvalidString of string
 
 [<RequireQualifiedAccess>]
-module Validations =
-    // Active pattern
-    let (|Int|_|) (input: string) =
-        match System.Int32.TryParse input with
-        | true, value -> Some value
-        | false, _ -> None
+module ValidIntegerOrString =
+    let toString (value: ValidIntegerOrString) =
+        match value with
+        | ValidIntegerOrString.ValidInteger i
+        | ValidIntegerOrString.InvalidInteger i -> $"%i{i}"
+        | ValidIntegerOrString.InvalidString invalidString -> invalidString
 
-    let validDimensionRange (dimensionInt: int) =
-        let isValid = 3 <= dimensionInt && dimensionInt < 10
+[<RequireQualifiedAccess>]
+module Validations =
+
+    let private minDimensionSize = 3
+    let private maxDimensionSize = 9
+
+    let private validDimensionRange (dimensionInt: int) =
+        let isValid = minDimensionSize <= dimensionInt && dimensionInt <= maxDimensionSize
+        printf $"Contains {isValid} - {dimensionInt}"
 
         if isValid then
             ValidIntegerOrString.ValidInteger dimensionInt
@@ -24,5 +31,5 @@ module Validations =
 
     let validDimension (newDimension: string) =
         match newDimension with
-        | Int dimensionInt -> ValidIntegerOrString.ValidInteger dimensionInt
+        | Utils.StringContainsInt dimensionInt -> validDimensionRange dimensionInt
         | _ -> ValidIntegerOrString.InvalidString newDimension
