@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Validations.fs" />
         <Compile Include="CounterModel.fs" />
         <Compile Include="CounterView.fs" />
         <Compile Include="TicTacToeModel.fs" />

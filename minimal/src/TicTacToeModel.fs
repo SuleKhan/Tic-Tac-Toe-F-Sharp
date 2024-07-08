@@ -66,6 +66,8 @@ module Board =
 type TicTacToeModel = {
     Board: Board
     NewDimensions: Result<Dimensions, DimensionsError>
+    NewWidth: ValidIntegerOrString
+    NewHeight: ValidIntegerOrString
     Turn: Player
     GameState: GameState
 }
@@ -74,14 +76,19 @@ type TicTacToeMsg =
     | SelectSpace of Player * Coord
     | ResetGame
     | UpdateDimensions of Dimensions
+    | SetNewWidth of string
+    | SetNewHeight of string
     
 module TicTacToeModel =
     
     let newDimensions = Dimensions.init 3 3
+    let newDimensions2 = ValidIntegerOrString.ValidInteger 3
     
     let init = {
         Board = Board.init newDimensions
-        NewDimensions = Ok newDimensions 
+        NewDimensions = Ok newDimensions
+        NewWidth = newDimensions2
+        NewHeight =  newDimensions2 
         Turn = Player.X
         GameState = InProgress
     }
@@ -205,3 +212,5 @@ module TicTacToeModel =
         | SelectSpace (player, coord) -> if model.GameState = InProgress then selectSpace player coord model else model
         | ResetGame -> resetGame model
         | UpdateDimensions dimensions -> updateDimensions dimensions model
+        | SetNewWidth _
+        | SetNewHeight _ -> model 
