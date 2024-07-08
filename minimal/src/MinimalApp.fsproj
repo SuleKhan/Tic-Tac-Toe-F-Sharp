@@ -10,6 +10,8 @@
     <ItemGroup>
         <Compile Include="CounterModel.fs" />
         <Compile Include="CounterView.fs" />
+        <Compile Include="TicTacToeModel.fs" />
+        <Compile Include="TicTacToeView.fs" />
         <Compile Include="App.fs" />
     </ItemGroup>
 

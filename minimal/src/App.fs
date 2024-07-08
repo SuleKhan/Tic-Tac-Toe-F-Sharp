@@ -14,53 +14,52 @@ open Feliz
 [<RequireQualifiedAccess>]
 type PageId =
     | Counter
-    | About
+    | TicTacToe
 
 // MODEL
 type Model = {
     Counter: CounterModel
-    About: string
+    TicTacToe: TicTacToeModel
     PageId: PageId
 }
-
-
 
 type Msg =
     | SwitchPage
     | CounterSubMsg of CounterMsg
+    | TicTacToeSubMsg of TicTacToeMsg
 
-let init () : Model = {Counter = CounterModel.init; About = "About"; PageId = PageId.Counter }
+let init () : Model = {Counter = CounterModel.init; TicTacToe = TicTacToeModel.init ; PageId = PageId.Counter }
 
 // UPDATE
-
 let switchPage (pageId : PageId) =
     match pageId with
-    | PageId.Counter -> PageId.About
-    | PageId.About -> PageId.Counter
-
-
+    | PageId.Counter -> PageId.TicTacToe
+    | PageId.TicTacToe -> PageId.Counter
 
 let update (msg: Msg) (model: Model) =
     match msg with
+    | TicTacToeSubMsg subMsg -> {model with TicTacToe = TicTacToeModel.update subMsg model.TicTacToe }
     | CounterSubMsg subMsg -> {model with Counter = CounterModel.update subMsg model.Counter}
     | SwitchPage -> {model with PageId = switchPage model.PageId }
 
 // VIEW (rendered with React)
-
-    
-let aboutView (about: string) =
-    Html.div [
-        Html.div [ prop.text about ]
-    ]
-
 let view (model: Model) (dispatch: Msg -> unit) : Fable.React.ReactElement =
-    Html.div [
-        match model.PageId with
-        | PageId.Counter -> CounterView.view model.Counter (CounterSubMsg >> dispatch)
-        | PageId.About -> aboutView model.About
-        Html.button [
-            prop.onClick(fun _ -> dispatch SwitchPage)
-            prop.text "Switch Page"
+    Html.main [
+        prop.style [
+            style.fontFamily "monospace"
+            style.fontSize (length.px 16)
+        ]
+        prop.children [
+            match model.PageId with
+            | PageId.Counter -> CounterView.view model.Counter (CounterSubMsg >> dispatch)
+            | PageId.TicTacToe -> TicTacToeView.view model.TicTacToe (TicTacToeSubMsg >> dispatch)
+            Html.button [
+                prop.style [
+                    style.margin (length.em 1)
+                ]
+                prop.onClick(fun _ -> dispatch SwitchPage)
+                prop.text "Switch Page"
+            ]
         ]
     ]
     
